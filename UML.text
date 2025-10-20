@@ -1,0 +1,97 @@
++----------------+           1       *     +----------------+
+|    Center      |----------------------->|      User      |
++----------------+                        +----------------+
+| id             |                        | id             |
+| name           |                        | name           |
+| location       |                        | email          |
+| liaison_officer_id |                    | role           |
++----------------+                        | center_id      |
+                                          +----------------+
+
++----------------+           1       *     +------------------------+
+|   Supplier     |----------------------->|        Product         |
++----------------+                        +------------------------+
+| id             |                        | id                     |
+| name           |                        | name                   |
+| phone          |                        | description            |
+| email          |                        | price                  |
+| address        |                        | unit                   |
+| contact_person |                        | supplier_id            |
+| status         |                        | status                 |
++----------------+                        +------------------------+
+
++----------------+           1       *     +------------------------+
+| PurchaseRequest|----------------------->| PurchaseRequestItem    |
++----------------+                        +------------------------+
+| id             |                        | id                     |
+| requester_id   |                        | purchase_request_id    |
+| supplier_id    |                        | product_id             |
+| status         |                        | quantity               |
+| request_date   |                        | unit_price             |
+| total_amount   |                        | subtotal               |
+| remarks        |                        +------------------------+
++----------------+
+      |
+      | 1
+      |
+      * 
++----------------+
+| PurchaseApproval|
++----------------+
+| id             |
+| purchase_request_id |
+| approved_by    |
+| approval_date  |
+| status         |
+| comment        |
++----------------+
+
++----------------+           1       *     +----------------+
+| PurchaseOrder  |----------------------->|    Delivery    |
++----------------+                        +----------------+
+| id             |                        | id             |
+| purchase_request_id |                   | purchase_order_id |
+| liaison_officer_id |                    | received_by    |
+| supplier_id    |                        | delivery_date  |
+| order_date     |                        | grn_number     |
+| order_number   |                        | remarks        |
+| status         |                        +----------------+
++----------------+
+                                          |
+                                          | 1
+                                          |
+                                          * 
+                                 +----------------+
+                                 | DeliveryItem   |
+                                 +----------------+
+                                 | id             |
+                                 | delivery_id    |
+                                 | product_id     |
+                                 | quantity_ordered |
+                                 | quantity_received|
+                                 | remarks        |
+                                 +----------------+
+
++----------------+           1       *     +----------------+
+|  PurchaseOrder |----------------------->|     Invoice    |
++----------------+                        +----------------+
+| id             |                        | id             |
+| ...            |                        | supplier_id    |
++----------------+                        | purchase_order_id|
+                                          | invoice_number |
+                                          | invoice_date   |
+                                          | amount         |
+                                          | status         |
+                                          +----------------+
+
++----------------+
+| MonthlyReport  |
++----------------+
+| id             |
+| month          |
+| year           |
+| center_id      |
+| liaison_officer_id |
+| total_amount   |
+| report_file    |
++----------------+
