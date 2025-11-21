@@ -35,8 +35,8 @@ Route::middleware('auth')->group(function () {
                 Route::get('/', 'index')->name('purchase-orders.index');
                 Route::get('/delivery/{uuid}', 'orderDelivery')->name('purchase-orders.delivery');
                 Route::get('/{uuid}', 'getOrder')->name('purchase-orders.detail');
-                Route::get('/approve/{uuid}', 'confirmFromMail')->name('purchase-orders.approve');
-                Route::get('/reject/{uuid}', 'rejectFromMail')->name('purchase-orders.reject');
+                // Route::get('/approve/{uuid}', 'confirmFromMail')->name('orders.approve');
+                // Route::get('/reject/{uuid}', 'rejectFromMail')->name('orders.reject');
             });
 
         // DELIVERIES
@@ -98,4 +98,11 @@ Route::middleware('auth')->group(function () {
         Route::get('/approve/{uuid}', 'approveFromMail')->name('purchase-request.approve');
         Route::get('/reject/{uuid}', 'rejectFromMail')->name('purchase-request.reject');
     });
+
+    Route::controller(PurchaseOrderController::class)
+        ->prefix('purchase-orders')
+        ->group(function () {
+            Route::get('/approve/{uuid}', 'confirmFromMail')->name('orders.approve');
+            Route::get('/reject/{uuid}', 'rejectFromMail')->name('orders.reject');
+        });
 });
