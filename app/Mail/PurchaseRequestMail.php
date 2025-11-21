@@ -39,6 +39,12 @@ class PurchaseRequestMail extends Mailable
     public function build()
     {
         return $this->subject('New Purchase Request')
+            ->withSymfonyMessage(function ($message) {
+                $message->getHeaders()
+                    ->addTextHeader('X-Mailer', 'Laravel')
+                    ->addTextHeader('X-Priority', '3')
+                    ->addTextHeader('X-AntiAbuse', 'This is a valid system notification');
+            })
             ->view('emails.purchase_request');
     }
     // public function content(): Content
