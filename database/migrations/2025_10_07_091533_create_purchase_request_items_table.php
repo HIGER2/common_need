@@ -13,13 +13,17 @@ return new class extends Migration
     {
         Schema::create('purchase_request_items', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('purchase_request_id');
-            $table->unsignedBigInteger('product_id');
-            $table->decimal('quantity', 12, 2)->default(0);
+            $table->string('uuid')->default();
+            $table->unsignedBigInteger('purchase_request_id')->nullable();
+            $table->unsignedBigInteger('product_id')->nullable();
+
+            $table->string('name')->nullable();
+            $table->bigInteger('quantity')->default(0);
             $table->decimal('unit_price', 12, 2)->default(0);
             $table->decimal('subtotal', 12, 2)->default(0);
-            $table->foreign('purchase_request_id')->references('id')->on('purchase_requests')->onDelete('cascade');
-            $table->foreign('product_id')->references('id')->on('products')->onDelete('cascade');
+
+            $table->foreign('purchase_request_id')->references('id')->on('purchase_requests')->onDelete('set null');
+            $table->foreign('product_id')->references('id')->on('products')->onDelete('set null');
             $table->timestamps();
         });
     }

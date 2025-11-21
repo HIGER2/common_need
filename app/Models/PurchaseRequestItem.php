@@ -9,7 +9,7 @@ class PurchaseRequestItem extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['purchase_request_id', 'product_id', 'quantity', 'unit_price', 'subtotal'];
+    protected $fillable = ['purchase_request_id', 'name', 'product_id', 'quantity', 'unit_price', 'subtotal'];
 
     public function purchaseRequest()
     {
@@ -19,5 +19,15 @@ class PurchaseRequestItem extends Model
     public function product()
     {
         return $this->belongsTo(Product::class);
+    }
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($model) {
+            if (!$model->uuid) {
+                $model->uuid = (string) \Illuminate\Support\Str::uuid();
+            }
+        });
     }
 }

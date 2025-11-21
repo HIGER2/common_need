@@ -3,13 +3,13 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Http\Services\AuthService;
+use App\Services\AuthService as ServicesAuthService;
 
 class AuthController extends Controller
 {
     protected $service;
 
-    public function __construct(AuthService $service)
+    public function __construct(ServicesAuthService $service)
     {
         $this->service = $service;
     }
@@ -21,16 +21,16 @@ class AuthController extends Controller
 
     public function sendOtp(Request $request)
     {
-        return $this->service->sendOtp($request->email);
+        return $this->service->sendOtp($request);
     }
 
     public function verifyOtp(Request $request)
     {
-        return $this->service->verifyOtp($request->email, $request->otp);
+        return $this->service->verifyOtp($request);
     }
 
-    public function logout()
+    public function logout(Request $request)
     {
-        return $this->service->logout();
+        return $this->service->logout($request);
     }
 }

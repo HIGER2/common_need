@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Http\Services\CenterService;
+use App\Services\CenterService;
 
 class CenterController extends Controller
 {

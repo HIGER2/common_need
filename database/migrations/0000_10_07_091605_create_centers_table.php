@@ -13,14 +13,10 @@ return new class extends Migration
     {
         Schema::create('centers', function (Blueprint $table) {
             $table->id();
-            $table->id();
+            $table->string('uuid')->default();
             $table->string('name');
             $table->string('location')->nullable();
             $table->unsignedBigInteger('liaison_officer_id')->nullable();
-            $table->foreign('liaison_officer_id')->references('id')->on('users')->onDelete('set null');
-
-            $table->timestamps();
-
             $table->timestamps();
         });
     }

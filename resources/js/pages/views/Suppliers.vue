@@ -1,3 +1,30 @@
+
+<script setup>
+import AdminLayout from '@/layouts/AdminLayout.vue';
+import TableComponent from '../components/TableComponent.vue';
+import { ref } from 'vue';
+import AddSupplierComponent from '../components/AddSupplierComponent.vue';
+const userModal = ref(null)
+
+const openModal = () => {
+  userModal.value.show()
+}
+
+defineProps({
+  suppliers: Object
+})
+
+
+const columns=[
+  {key:'name',label:'Name'},
+  {key:'last_name',label:'last name'},
+  {key:'email',label:'email'},
+  {key:'phone',label:'phone'},
+  {key:'phone',label:'phone'},
+]
+
+</script>
+
 <template>
   <AdminLayout>
     <header class="bg-white  border-b border-gray-200 flex justify-center items-center px-4 h-16">
@@ -14,23 +41,10 @@
       </button>
       </div>
   </header>
-   
-    
     <div class="w-full p-4">
-      <TableComponent/>
+      <!-- <pre>{{ suppliers }}</pre> -->
+      <TableComponent :columns="columns" :data="suppliers"/>
     </div>
   </AdminLayout>
 </template>
 
-<script setup>
-import AdminLayout from '@/layouts/AdminLayout.vue';
-import TableComponent from '../components/TableComponent.vue';
-import ModalComponent from '../components/ModalComponent.vue';
-import { ref } from 'vue';
-import AddSupplierComponent from '../components/AddSupplierComponent.vue';
-const userModal = ref(null)
-
-const openModal = () => {
-  userModal.value.show()
-}
-</script>

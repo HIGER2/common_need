@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Services\DeliveryService;
 use Illuminate\Http\Request;
-use App\Http\Services\DeliveryService;
 
 class DeliveryController extends Controller
 {
@@ -12,9 +12,13 @@ class DeliveryController extends Controller
     {
         $this->service = $service;
     }
-    public function index()
+    public function deliveryOrder($uuid)
     {
-        return $this->service->getAllDeliveries();
+        return $this->service->deliveryOrder($uuid);
+    }
+    public function deliveryOrderConfirm($uuid)
+    {
+        return $this->service->deliveryOrderConfirm($uuid);
     }
     public function show($id)
     {

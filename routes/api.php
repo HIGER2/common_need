@@ -24,18 +24,18 @@ Route::post('/logout', [AuthController::class, 'logout'])->middleware(['web', 'a
 // ---------------------------
 // GROUP API ADMIN (auth via session)
 // ---------------------------
-Route::prefix('admin')->middleware(['web', 'auth.api.session'])->group(function () {
+Route::prefix('admin')->middleware(['web'])->group(function () {
     // ---------------------------
     // USERS
+    // , 'auth.api.session'
     // ---------------------------
     Route::prefix('users')->controller(UserController::class)->group(function () {
         Route::get('/', 'index');          // Liste tous les users
         Route::get('/{id}', 'show');       // Détail d'un user
-        Route::post('/', 'store');         // Créer
+        Route::post('/create', 'store');         // Créer
         Route::put('/{id}', 'update');     // Modifier
         Route::delete('/{id}', 'destroy'); // Supprimer
     });
-
     // ---------------------------
     // CENTERS
     // ---------------------------
@@ -46,14 +46,13 @@ Route::prefix('admin')->middleware(['web', 'auth.api.session'])->group(function 
         Route::put('/{id}', 'update');
         Route::delete('/{id}', 'destroy');
     });
-
     // ---------------------------
     // SUPPLIERS
     // ---------------------------
     Route::prefix('suppliers')->controller(SupplierController::class)->group(function () {
         Route::get('/', 'index');
         Route::get('/{id}', 'show');
-        Route::post('/', 'store');
+        Route::post('/store', 'store');
         Route::put('/{id}', 'update');
         Route::delete('/{id}', 'destroy');
     });
@@ -64,7 +63,7 @@ Route::prefix('admin')->middleware(['web', 'auth.api.session'])->group(function 
     Route::prefix('products')->controller(ProductController::class)->group(function () {
         Route::get('/', 'index');
         Route::get('/{id}', 'show');
-        Route::post('/', 'store');
+        Route::post('/store', 'store');
         Route::put('/{id}', 'update');
         Route::delete('/{id}', 'destroy');
     });
@@ -76,6 +75,7 @@ Route::prefix('admin')->middleware(['web', 'auth.api.session'])->group(function 
         Route::get('/', 'index');
         Route::get('/{id}', 'show');
         Route::post('/', 'store');
+        Route::get('/approve/{uuid}/{status}', 'requestApproved');
         Route::put('/{id}', 'update');
         Route::delete('/{id}', 'destroy');
     });
@@ -113,6 +113,7 @@ Route::prefix('admin')->middleware(['web', 'auth.api.session'])->group(function 
     Route::prefix('deliveries')->controller(DeliveryController::class)->group(function () {
         Route::get('/', 'index');
         Route::get('/{id}', 'show');
+        Route::get('/order/confirm/{uuid}', 'deliveryOrderConfirm');
         Route::post('/', 'store');     // Enregistrer livraison
         Route::put('/{id}', 'update'); // Modifier
         Route::delete('/{id}', 'destroy');

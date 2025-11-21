@@ -13,15 +13,20 @@ return new class extends Migration
     {
         Schema::create('deliveries', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('purchase_order_id');
-            $table->unsignedBigInteger('received_by');
-            $table->date('delivery_date');
+            $table->string('uuid')->nullable();
+            $table->string('reference')->unique()->nullable();
+            $table->unsignedBigInteger('purchase_order_id')->nullable();
+            $table->unsignedBigInteger('received_by')->nullable();
+
+            $table->date('date')->nullable();
+            $table->bigInteger('quantity_ordered')->default(0);
+            $table->bigInteger('quantity_received')->default(0);
+            $table->decimal('total_received', 15, 2)->default(0);
+            $table->decimal('total_ordered', 15, 2)->default(0);
             $table->string('grn_number')->nullable();
             $table->text('remarks')->nullable();
-            $table->timestamps();
-
-            $table->foreign('purchase_order_id')->references('id')->on('purchase_orders')->onDelete('cascade');
-            $table->foreign('received_by')->references('id')->on('users')->onDelete('cascade');
+            $table->foreign('purchase_order_id')->references('id')->on('purchase_orders')->onDelete('set null');
+            $table->foreign('received_by')->references('id')->on('users')->onDelete('set null');
             $table->timestamps();
         });
     }

@@ -1,36 +1,63 @@
+
+<script setup>
+import AdminLayout from '@/layouts/AdminLayout.vue';
+import TableComponent from '../components/TableComponent.vue';
+import { ref } from 'vue';
+import AddRequestComponent from '../components/AddRequestComponent.vue';
+import StatusRequestBadge from '../components/StatusRequestBadge.vue';
+const userModal = ref(null)
+
+const openModal = () => {
+  userModal.value.show()
+}
+
+defineProps({
+  orders: Object,
+})
+
+const columns=[
+  {key:'reference',label:'reference'},
+  {key:'total_item',label:'Items'},
+  {key:'total_quantity',label:'Total quantity'},
+  {key:'total_amount',label:'Total amount'},
+  {key:'status',label:'status'},
+  {key:'date',label:'date'},
+  {key:'action',label:''},
+]
+
+</script>
+
 <template>
   <AdminLayout>
-    <h1 class="text-2xl font-bold mb-4">Purchase Orders</h1>
-
-    <table class="table w-full">
-      <thead>
-        <tr><th>ID</th><th>Request</th><th>Supplier</th><th>Status</th><th>Order Date</th><th>Actions</th></tr>
-      </thead>
-      <tbody>
-        <tr v-for="order in orders" :key="order.id">
-          <td>{{ order.id }}</td>
-          <td>{{ order.request_number }}</td>
-          <td>{{ order.supplier_name }}</td>
-          <td>{{ order.status }}</td>
-          <td>{{ order.order_date }}</td>
-          <td class="space-x-2">
-            <button class="btn btn-sm btn-info" @click="viewOrder(order)">View</button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
+    <header class="bg-white  border-b border-gray-200 flex justify-center items-center px-4 h-16">
+      <div class="flex justify-between items-center w-full">
+        <!-- Titre -->
+        <h1 class="flex items-center gap-1.5 text-xl font-semibold text-highlighted truncate">
+          Orders
+        </h1>
+        <!-- Bouton -->
+          <!-- <AddRequestComponent :productSelect/>
+          <button 
+          onclick="my_modal_3.showModal()"
+            class="px-4 py-1 btn  shrink-0 flex items-center justify-between border-b border-default  sm:px-6 gap-1.5 bg-primarys text-[15px] text-white font-medium rounded-md shadow-md hover:bg-primarys-700 cursor-pointer transition-colors duration-200"
+        >
+            + New request
+        </button> -->
+      </div>
+  </header>
+    <div class="w-full p-4">
+      <!-- <pre>{{ requests }}</pre> -->
+      <TableComponent :columns="columns" :data="orders">
+        <template #action="{row}">
+          <a :href="`/purchase-orders/${row?.uuid}`" class="p-2 text-xl">
+            <i class="uil uil-info-circle"></i>
+          </a>
+         </template>
+         <template #status="{row}">
+            <StatusRequestBadge :status="row.status" />
+         </template>
+      </TableComponent>
+    </div>
   </AdminLayout>
 </template>
 
-<script setup>
-import AdminLayout from '@/Layouts/AdminLayout.vue';
-import { ref, onMounted } from 'vue';
-import axios from 'axios';
-
-const orders = ref([]);
-
-function fetchOrders(){ axios.get('/api/admin/purchase-orders').then(res=>orders.value=res.data.data); }
-function viewOrder(order){ alert(JSON.stringify(order.items)); }
-
-onMounted(fetchOrders);
-</script>

@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('monthly_reports', function (Blueprint $table) {
             $table->id();
+            $table->string('uuid')->default();
             $table->string('month');
             $table->integer('year');
             $table->unsignedBigInteger('center_id');

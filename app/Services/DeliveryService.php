@@ -3,10 +3,91 @@
 namespace App\Services;
 
 use App\Models\Delivery;
+use App\Models\DeliveryRequest;
+use App\Models\DeliveryRequestItem;
 use App\Models\PurchaseOrder;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Inertia\Inertia;
 
 class DeliveryService
 {
+    public function deliveryOrder($uuid)
+    {
+        $all = PurchaseOrder::with('deliveries.deliveryRequest.items', 'deliveries.deliveryRequest.supplier')
+            ->where('uuid', $uuid)->first();
+        return Inertia::render('views/PurchaseOrderDelivery', [
+            'data' => $all,
+        ]);
+    }
+
+    public function deliveryOrderConfirm($uuid)
+    {
+        try {
+            DB::beginTransaction();
+
+            $order = PurchaseOrder::with(
+                'purchaseRequest.requester',
+                'purchaseRequest.requests.items',
+                'purchaseRequest.requests.supplier'
+            )->where('uuid', $uuid)->firstOrFail();
+
+            if ($order->deliveries) {
+                return back()->with('message', 'livraison déjá confirmée');
+            }
+            // Create delivery
+            $delivery = Delivery::create([
+                'purchase_order_id' => $order->id,
+                'received_by'       => Auth::id(),
+                'quantity_ordered'  => $order->total_quantity,
+                'total_ordered'     => $order->total_amount,
+            ]);
+
+            $requests = [];
+
+            foreach ($order->purchaseRequest->requests as $request) {
+                // Create / update DeliveryRequest
+                $deliveryRequest = $delivery->deliveryRequest()->updateOrCreate(
+                    [
+                        "supplier_id" => $request->supplier_id
+                    ],
+                    [
+                        'delivery_id'       => $delivery->id,
+                        'supplier_id'       => $request->supplier_id,
+                        'quantity_ordered'  => $request->total_quantity,
+                        'total_ordered'     => $request->total_amount,
+                    ]
+                );
+
+                // Loop on request items
+                foreach ($request->items as $item) {
+
+                    $deliveryRequest->items()->updateOrCreate(
+                        [
+                            "product_id" => $item->product_id
+                        ],
+                        [
+                            'delivery_request_id' => $deliveryRequest->id,
+                            'product_id'          => $item->product_id,
+                            'quantity_ordered'    => $item->quantity,
+                            'subtotal_ordered'    => $item->subtotal,
+                            'unit_price'          => $item->unit_price,
+                            'name'                => $item->name,
+                        ]
+                    );
+                }
+
+                $requests[] = $request->load('items');
+            }
+
+            DB::commit();
+
+            return back()->with('message', 'Delivery successfully created.');
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            return back()->with('error', 'An error occurred: ' . $th->getMessage());
+        }
+    }
 
     public function getAllDeliveries()
     {

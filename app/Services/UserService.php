@@ -10,24 +10,29 @@ class UserService
 {
     public function index()
     {
-        return Inertia::render('views/Users');
+        $all = User::all();
+        return Inertia::render('views/Users', [
+            'users' => $all,  // <-- ici on passe les utilisateurs
+        ]);
     }
 
     public function createUser($data)
     {
         try {
-            $user = User::create([
+            $user = User::updateOrCreate([
+                "email" => $data['email'],
+            ], [
                 'name' => $data['name'],
-                'email' => $data['email'],
-                'phone' => $data['phone'],
+                'last_name' => $data['last_name'],
+                // 'phone' => $data['phone'],
                 'role' => $data['role'],
-                'password' => Hash::make($data['password']),
-                'center_id' => $data['center_id'] ?? null,
-                'status' => 'active',
+                // 'password' => Hash::make($data['password']),
+                // 'center_id' => $data['center_id'] ?? null,
+                // 'status' => $data['status'] ?? 'active',
             ]);
-            return response()->json(['success' => true, 'user' => $user], 201);
+            return back(303)->with('success', 'User created successfully');
         } catch (\Exception $e) {
-            return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
+            return back(303)->with('error', 'An error occurred: ' . $e->getMessage());
         }
     }
 

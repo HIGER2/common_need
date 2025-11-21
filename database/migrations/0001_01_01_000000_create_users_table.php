@@ -2,7 +2,9 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Str;
 
 return new class extends Migration
 {
@@ -14,20 +16,30 @@ return new class extends Migration
         Schema::create('users', function (Blueprint $table) {
             $table->id();
             $table->string('name');
+            $table->string('uuid')->default();
             $table->string('last_name')->nullable();
             $table->string('email')->unique();
             $table->string('phone')->nullable()->unique();
-            $table->enum('role', ['Requester', 'BudgetOfficer', 'LiaisonOfficer', 'Vendor', 'Finance'])->nullable('Requester');
-            $table->string('password');
+            $table->enum('role', ['Requester', 'BudgetOfficer', 'admin', 'LiaisonOfficer', 'Vendor', 'Finance'])->nullable('Requester');
             $table->enum('status', ['active', 'inactive'])->default('active');
             $table->unsignedBigInteger('center_id')->nullable();
-            $table->foreign('center_id')->references('id')->on('centers')->onDelete('set null');
-
             $table->string('password')->nullable();
             $table->string('pin')->nullable();
-            $table->rememberToken();
+            $table->dateTime('otp_expires_at')->nullable();
             $table->timestamps();
         });
+
+        DB::table('users')->insert([
+            'name' => 'Admin',
+            'last_name' => 'Default',
+            'email' => 'admin@example.com',
+            'role' => 'Requester', // ou "BudgetOfficer" si tu veux
+            'status' => 'active',
+            // 'password' => bcrypt('password'), // mot de passe par défaut
+            'pin' => '123456',
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
 
         Schema::create('password_reset_tokens', function (Blueprint $table) {
             $table->string('email')->primary();

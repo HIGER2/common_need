@@ -2,14 +2,16 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str;
 
 class PurchaseRequest extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['requester_id', 'supplier_id', 'status', 'request_date', 'total_amount', 'remarks'];
+    protected $fillable = ['purchase_global_id', "reference", 'supplier_id', 'status', 'date', 'total_amount', 'total_item', 'total_quantity', 'remarks'];
 
     public function requester()
     {
@@ -34,5 +36,19 @@ class PurchaseRequest extends Model
     public function purchaseOrder()
     {
         return $this->hasOne(PurchaseOrder::class);
+    }
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($model) {
+            // Exemple : event lors de la création
+            $model->uuid = Str::uuid();
+            $model->date = Carbon::today();
+            do {
+                $ref = 'R-' . strtoupper(Str::random(8));
+            } while (self::where('reference', $ref)->exists());
+            $model->reference = $ref;
+        });
     }
 }

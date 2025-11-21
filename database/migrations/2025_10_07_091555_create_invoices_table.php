@@ -13,13 +13,13 @@ return new class extends Migration
     {
         Schema::create('invoices', function (Blueprint $table) {
             $table->id();
+            $table->string('uuid')->default();
             $table->unsignedBigInteger('supplier_id');
             $table->unsignedBigInteger('purchase_order_id');
             $table->string('invoice_number');
             $table->date('invoice_date');
             $table->decimal('amount', 12, 2);
             $table->enum('status', ['pending', 'validated', 'paid'])->default('pending');
-            $table->timestamps();
 
             $table->foreign('supplier_id')->references('id')->on('suppliers')->onDelete('cascade');
             $table->foreign('purchase_order_id')->references('id')->on('purchase_orders')->onDelete('cascade');

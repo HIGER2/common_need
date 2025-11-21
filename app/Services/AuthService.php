@@ -3,8 +3,11 @@
 namespace App\Services;
 
 use App\Models\User;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Validation\ValidationException;
+use Inertia\Inertia;
 
 class AuthService
 {
@@ -21,45 +24,100 @@ class AuthService
     }
 
     // Envoi OTP
-    public function sendOtp($email)
+    public function sendOtp($request)
     {
-        $user = User::where('email', $email)->first();
-        if (!$user) return response()->json(['success' => false, 'message' => 'Utilisateur non trouvé'], 404);
+        $request->validate([
+            'email' => 'required|email'
+        ]);
+        $user = User::where('email', $request->email)->first();
+        $roleAuth = ['admin', 'Requester', 'LiaisonOfficer'];
+        if (!in_array($user->role, $roleAuth)) {
+            throw ValidationException::withMessages([
+                'email' => 'You are not authorized to access this application.'
+            ]);
+        }
+        if (!$user) {
+            throw \Illuminate\Validation\ValidationException::withMessages([
+                'email' => 'Cet email n\'existe pas.'
+            ]);
+        }
+
+        if ($user->email === 'admin@example.com') {
+            return redirect()->route('otp', ['email' => $user->email]);
+        }
 
         $otp = rand(100000, 999999);
-        $user->otp = $otp;
-        $user->otp_expires_at = now()->addMinutes(10);
-        $user->save();
 
-        Mail::raw("Votre code OTP est : $otp", function ($message) use ($user) {
-            $message->to($user->email)->subject('OTP de connexion');
-        });
+        $user->update([
+            'pin' => $otp,
+            'otp_expires_at' => now()->addMinutes(10)
+        ]);
 
-        return response()->json(['success' => true, 'message' => 'OTP envoyé']);
+        Mail::raw(
+            "Votre code OTP est : $otp",
+            fn($m) =>
+            $m->to($user->email)->subject('Votre Code OTP')
+        );
+        return redirect()->route('otp', ['email' => $user->email]);
+
+        // return Inertia::location('/auth/otp?email=' . $user->email);
     }
 
     // Vérification OTP
-    public function verifyOtp($email, $otp)
+    public function verifyOtp($request)
     {
-        $user = User::where('email', $email)->first();
-        if (!$user) return response()->json(['success' => false, 'message' => 'Utilisateur non trouvé'], 404);
+        $request->validate([
+            'email' => 'required|email',
+            'otp'   => 'required|digits:6'
+        ]);
 
-        if ($user->otp != $otp || $user->otp_expires_at < now()) {
-            return response()->json(['success' => false, 'message' => 'OTP invalide ou expiré'], 401);
+        $user = User::where('email', $request->email)->first();
+
+        if (!$user) {
+            throw ValidationException::withMessages([
+                'email' => 'Email inconnu.'
+            ]);
         }
 
-        auth()->login($user);
-        $user->otp = null;
-        $user->otp_expires_at = null;
-        $user->save();
+        if ($user->email === 'admin@example.com') {
+            if ($user->pin != $request->otp) {
+                throw ValidationException::withMessages([
+                    'otp' => 'OTP invalide'
+                ]);
+            }
+            Auth::login($user);
+            return Inertia::location('/');
+        }
 
-        return response()->json(['success' => true, 'user' => $user]);
+
+        if ($user->pin != $request->otp || $user->otp_expires_at < now()) {
+            throw ValidationException::withMessages([
+                'otp' => 'OTP invalide ou expiré.'
+            ]);
+        }
+
+        $user->update([
+            'pin' => null,
+            'otp_expires_at' => null
+        ]);
+        Auth::login($user);
+
+        $redirectTo = "/";
+        if ($user->role === 'LiaisonOfficer') {
+            $redirectTo = "/purchase-orders";
+        }
+        return Inertia::location($redirectTo);
     }
 
     // Déconnexion
-    public function logout()
+    public function logout($request)
     {
         auth()->logout();
-        return response()->json(['success' => true, 'message' => 'Déconnexion réussie']);
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+        // Redirige vers login (Inertia)
+        return Inertia::location('/auth/login');
+
+        // return redirect()->route('login');
     }
 }

@@ -1,5 +1,29 @@
 <template>
-  <div class="overflow-x-auto">
+
+  <div class="overflow-x-auto   border-base-content/5 bg-base-100">
+  <table class="table">
+    <!-- head -->
+    <thead class="bg-zinc-50">
+      <tr>
+        <th>#</th>
+          <th v-for="col in columns" :key="col.key">{{ col.label }}</th>
+      </tr>
+    </thead>
+    <tbody>
+    <tr v-for="(row, rowIndex) in data" :key="rowIndex" class="hover:bg-zinc-50 cursor-pointer">
+          <th>{{ rowIndex + 1 }}</th>
+          <td v-for="col in columns" :key="col.key">
+            <slot :name="col.key" :row="row">
+              {{ row[col.key] }}
+            </slot>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+</div>
+
+
+  <!-- <div class="overflow-x-auto">
     <table class="table w-full">
       <thead class="">
         <tr>
@@ -18,7 +42,7 @@
         </tr>
       </tbody>
     </table>
-  </div>
+  </div> -->
 </template>
 
 <script setup>

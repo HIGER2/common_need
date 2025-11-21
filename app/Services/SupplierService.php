@@ -10,7 +10,11 @@ class SupplierService
 
     public function index()
     {
-        return Inertia::render('views/Suppliers');
+        $all = Supplier::all();
+
+        return Inertia::render('views/Suppliers', [
+            'suppliers' => $all,  // <-- ici on passe les utilisateurs
+        ]);
     }
 
     public function getAllSuppliers()
@@ -26,10 +30,18 @@ class SupplierService
     public function createSupplier($data)
     {
         try {
-            $s = Supplier::create($data);
-            return response()->json(['success' => true, 'supplier' => $s], 201);
+            $s = Supplier::updateOrCreate([
+                "email" => $data['email'],
+            ], [
+                'name' => $data['name'],
+                'last_name' => $data['last_name'],
+                'address' => $data['address'] ?? null,
+                // 'phone' => $data['phone'] ?? null,
+                // 'contact_person' => $data['contact_person'] ?? null,
+            ]);
+            return back(303)->with('success', 'User created successfully');
         } catch (\Exception $e) {
-            return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
+            return back(303)->with('error', 'An error occurred: ' . $e->getMessage());
         }
     }
     public function updateSupplier($id, $data)

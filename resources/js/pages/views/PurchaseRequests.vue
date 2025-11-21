@@ -1,61 +1,65 @@
+
+<script setup>
+import AdminLayout from '@/layouts/AdminLayout.vue';
+import TableComponent from '../components/TableComponent.vue';
+import { ref } from 'vue';
+import AddRequestComponent from '../components/AddRequestComponent.vue';
+import StatusRequestBadge from '../components/StatusRequestBadge.vue';
+const userModal = ref(null)
+
+const openModal = () => {
+  userModal.value.show()
+}
+
+defineProps({
+  requests: Object,
+  productSelect:Array,
+  budgetOfficer:Array
+})
+
+const columns=[
+  {key:'reference',label:'reference'},
+  {key:'total_item',label:'Items'},
+  {key:'total_quantity',label:'Total quantity'},
+  {key:'total_amount',label:'Total amount'},
+  {key:'status',label:'status'},
+  {key:'date',label:'date'},
+  {key:'action',label:''},
+]
+
+</script>
+
 <template>
   <AdminLayout>
-    <div class="flex justify-between mb-4">
-      <h1 class="text-2xl font-bold">Purchase Requests</h1>
-      <button class="btn btn-primary" @click="openModal = true">New Request</button>
+    <header class="bg-white  border-b border-gray-200 flex justify-center items-center px-4 h-16">
+      <div class="flex justify-between items-center w-full">
+        <!-- Titre -->
+        <h1 class="flex items-center gap-1.5 text-xl font-semibold text-highlighted truncate">
+          Requests
+        </h1>
+        <!-- Bouton -->
+        <AddRequestComponent :productSelect="productSelect" :budgetOfficer="budgetOfficer"/>
+        <button 
+        onclick="my_modal_3.showModal()"
+          class="px-4 py-1 btn  shrink-0 flex items-center justify-between border-b border-default  sm:px-6 gap-1.5 bg-primarys text-[15px] text-white font-medium rounded-md shadow-md hover:bg-primarys-700 cursor-pointer transition-colors duration-200"
+      >
+          + New request
+      </button>
+      </div>
+  </header>
+    <div class="w-full p-4">
+      <!-- <pre>{{ requests }}</pre> -->
+      <TableComponent :columns="columns" :data="requests">
+        <template #action="{row}">
+          <a :href="`/requests/${row?.uuid}`" class="p-2 text-xl">
+            <i class="uil uil-info-circle"></i>
+          </a>
+         </template>
+         <template #status="{row}">
+            <StatusRequestBadge :status="row.status" />
+         </template>
+      </TableComponent>
     </div>
-
-    <!-- Table des demandes -->
-    <table class="table w-full">
-      <thead>
-        <tr>
-          <th>ID</th>
-          <th>Requester</th>
-          <th>Supplier</th>
-          <th>Status</th>
-          <th>Total</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="request in requests" :key="request.id">
-          <td>{{ request.id }}</td>
-          <td>{{ request.requester.name }}</td>
-          <td>{{ request.supplier.name }}</td>
-          <td>{{ request.status }}</td>
-          <td>{{ request.total_amount }}</td>
-          <td class="space-x-2">
-            <button class="btn btn-sm btn-warning" @click="editRequest(request)">Edit</button>
-            <button class="btn btn-sm btn-error" @click="deleteRequest(request.id)">Delete</button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
   </AdminLayout>
 </template>
 
-<script setup>
-import AdminLayout from '@/Layouts/AdminLayout.vue';
-import { ref, onMounted } from 'vue';
-import axios from 'axios';
-
-const requests = ref([]);
-const openModal = ref(false);
-
-function fetchRequests() {
-  axios.get('/api/admin/purchase-requests').then(res => {
-    requests.value = res.data.data;
-  });
-}
-
-function editRequest(request) {
-  // ouvrir modal ou page pour modifier
-}
-
-function deleteRequest(id) {
-  if (!confirm('Are you sure?')) return;
-  axios.delete(`/api/admin/purchase-requests/${id}`).then(() => fetchRequests());
-}
-
-onMounted(() => fetchRequests());
-</script>
