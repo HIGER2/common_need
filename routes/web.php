@@ -38,7 +38,6 @@ Route::middleware('auth')->group(function () {
                 // Route::get('/approve/{uuid}', 'confirmFromMail')->name('orders.approve');
                 // Route::get('/reject/{uuid}', 'rejectFromMail')->name('orders.reject');
             });
-
         // DELIVERIES
         Route::controller(DeliveryController::class)->prefix('deliveries')->group(function () {
             Route::get('/order/{uuid}', 'deliveryOrder')->name('admin.deliveries.index');
