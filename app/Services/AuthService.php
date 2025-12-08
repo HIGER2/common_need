@@ -30,15 +30,17 @@ class AuthService
             'email' => 'required|email'
         ]);
         $user = User::where('email', $request->email)->first();
+
+        if (!$user) {
+            throw \Illuminate\Validation\ValidationException::withMessages([
+                'email' => 'Cet email n\'existe pas.'
+            ]);
+        }
+
         $roleAuth = ['admin', 'Requester', 'BudgetOfficer', 'Vendor', 'Finance'];
         if (!in_array($user->role, $roleAuth)) {
             throw ValidationException::withMessages([
                 'email' => 'You are not authorized to access this application.'
-            ]);
-        }
-        if (!$user) {
-            throw \Illuminate\Validation\ValidationException::withMessages([
-                'email' => 'Cet email n\'existe pas.'
             ]);
         }
 
