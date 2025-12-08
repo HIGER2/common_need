@@ -55,11 +55,18 @@ class AuthService
             'otp_expires_at' => now()->addMinutes(10)
         ]);
 
+
+        // Contenu bilingue de l'email
+        $frMessage = "Bonjour {$user->name},\n\nVoici votre code OTP pour vous connecter à votre compte : {$otp}\nCe code est valide uniquement pour quelques minutes.";
+
+        $enMessage = "Hello {$user->name},\n\nHere is your OTP code to log in to your account: {$otp}\nThis code is valid for a few minutes only.";
+
         Mail::raw(
-            "Votre code OTP est : $otp",
+            $frMessage . "\n\n-/-\n\n" . $enMessage, // FR puis EN séparé par un trait
             fn($m) =>
-            $m->to($user->email)->subject('Votre Code OTP')
+            $m->to($user->email)->subject('Code OTP / OTP Code')
         );
+
         return redirect()->route('otp', ['email' => $user->email]);
 
         // return Inertia::location('/auth/otp?email=' . $user->email);

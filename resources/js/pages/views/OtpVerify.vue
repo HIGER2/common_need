@@ -24,7 +24,12 @@
                     {{ form.errors.otp }}
                 </div>
             </div>
-
+             <div class="w-full text-sm  mb-3" >
+                <p>If you did not receive the OTP code, please try again.</p>
+                <button type="button" class="text-blue-600 hover:underline cursor-pointer" 
+                @click="resendOtp()"
+                >Resend OTP</button>
+            </div>
             <button
                 type="submit"
                 class="bg-primarys text-white px-4 py-2 rounded hover:bg-primarys-dark cursor-pointer w-full transition"
@@ -52,5 +57,18 @@ const form = useForm({
 
 function submit() {
   form.post('/auth/verify-otp')
+}
+
+
+function resendOtp() {
+  form.post('/auth/send-otp' ,{
+    data:{email:form.email},
+    onSuccess: (page) => {
+      successMessage.value = 'OTP envoyé avec succès !'
+    },
+    onError: (errors) => {
+      console.log('Erreurs envoyées par Laravel:', errors)
+    }
+  })
 }
 </script>
