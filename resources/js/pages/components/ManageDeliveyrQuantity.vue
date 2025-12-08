@@ -120,6 +120,7 @@ const cancel=()=>{
                       v-model.number="item.quantity_received"
                       type="number"
                       min="0"
+                      :max="item.quantity_ordered"
                       placeholder="Price"
                       class="input w-full"
                       required

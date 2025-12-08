@@ -68,7 +68,6 @@ const submitForm = () => {
   if (form.budget_officer_id === '') {
     errors.push('Veuillez sélectionner un agent de liaison.')
   }
-
     if (!confirm('Are you sure you want to continue?')) {
       return;
     }

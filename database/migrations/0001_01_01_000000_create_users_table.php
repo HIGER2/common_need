@@ -20,7 +20,7 @@ return new class extends Migration
             $table->string('last_name')->nullable();
             $table->string('email')->unique();
             $table->string('phone')->nullable()->unique();
-            $table->enum('role', ['Requester', 'BudgetOfficer', 'admin', 'LiaisonOfficer', 'Vendor', 'Finance'])->nullable('Requester');
+            $table->enum('role', ['Requester', 'BudgetOfficer', 'Admin', 'LiaisonOfficer', 'Vendor', 'Finance'])->nullable('Requester');
             $table->enum('status', ['active', 'inactive'])->default('active');
             $table->unsignedBigInteger('center_id')->nullable();
             $table->string('password')->nullable();
@@ -33,7 +33,7 @@ return new class extends Migration
             'name' => 'Admin',
             'last_name' => 'Default',
             'email' => 'admin@example.com',
-            'role' => 'Requester', // ou "BudgetOfficer" si tu veux
+            'role' => 'Admin', // ou "BudgetOfficer" si tu veux
             'status' => 'active',
             // 'password' => bcrypt('password'), // mot de passe par défaut
             'pin' => '123456',

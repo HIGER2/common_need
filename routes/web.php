@@ -27,7 +27,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
     // ROUTES POUR LiaisonOfficer UNIQUEMENT (PAS de dashboard)
-    Route::middleware('role:LiaisonOfficer,Requester,BudgetOfficer,Vendor,Finance')->group(function () {
+    Route::middleware('role:LiaisonOfficer,Requester,BudgetOfficer,Vendor,Finance,Admin')->group(function () {
         // PURCHASE ORDERS
         Route::controller(PurchaseOrderController::class)
             ->prefix('purchase-orders')
@@ -47,7 +47,7 @@ Route::middleware('auth')->group(function () {
 
     // ROUTES ADMIN (avec dashboard)
     // ROUTES POUR TOUS LES AUTRES RÔLES (Requester, BudgetOfficer, Vendor, Finance)
-    Route::middleware('role:Requester,BudgetOfficer,Vendor,Finance')->group(function () {
+    Route::middleware('role:Requester,BudgetOfficer,Vendor,Finance,Admin')->group(function () {
 
         // Dashboard
         Route::get('/', [PurchaseRequestController::class, 'index'])->name('dashboard');
