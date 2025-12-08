@@ -34,7 +34,7 @@ Route::prefix('admin')->middleware(['web'])->group(function () {
         Route::get('/{id}', 'show');       // Détail d'un user
         Route::post('/create', 'store');         // Créer
         Route::put('/{id}', 'update');     // Modifier
-        Route::delete('/{id}', 'destroy'); // Supprimer
+        Route::delete('/{uuid}', 'destroy')->name('users.delete');
     });
     // ---------------------------
     // CENTERS

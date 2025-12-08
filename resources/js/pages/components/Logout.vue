@@ -2,7 +2,7 @@
   <button 
     @click="handleLogout" 
     :disabled="processing"
-    class="px-4 py-2 bg-primarys cursor-pointer text-white rounded "
+    class="px-4 py-1  cursor-pointer text-primarys  border btn-soft  btn border-gray-200 rounded "
   >
   <i class="uil uil-signout"></i>
     {{ processing ? 'Logging out...' : 'Logout' }}

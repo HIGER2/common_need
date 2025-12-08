@@ -41,6 +41,7 @@ Route::middleware('auth')->group(function () {
         // DELIVERIES
         Route::controller(DeliveryController::class)->prefix('deliveries')->group(function () {
             Route::get('/order/{uuid}', 'deliveryOrder')->name('admin.deliveries.index');
+            Route::post('/quantity/{uuid}', 'deliveryQuantity')->name('admin.deliveryQuantity');
         });
     });
 

@@ -39,12 +39,12 @@ const columns=[
         </h1>
         <!-- Bouton -->
         <AddRequestComponent :productSelect="productSelect" :budgetOfficer="budgetOfficer"/>
-        <button 
-        onclick="my_modal_3.showModal()"
-          class="px-4 py-1 btn  shrink-0 flex items-center justify-between border-b border-default  sm:px-6 gap-1.5 bg-primarys text-[15px] text-white font-medium rounded-md shadow-md hover:bg-primarys-700 cursor-pointer transition-colors duration-200"
-      >
-          + New request
-      </button>
+          <button 
+          onclick="my_modal_3.showModal()"
+            class="px-4 py-1 btn  shrink-0 flex items-center justify-between border-b border-default  sm:px-6 gap-1.5 bg-primarys text-[15px] text-white font-medium rounded-md shadow-md hover:bg-primarys-700 cursor-pointer transition-colors duration-200"
+        >
+            + New request
+        </button>
       </div>
   </header>
     <div class="w-full p-4">

@@ -68,6 +68,10 @@ const submitForm = () => {
   if (form.budget_officer_id === '') {
     errors.push('Veuillez sélectionner un agent de liaison.')
   }
+
+    if (!confirm('Are you sure you want to continue?')) {
+      return;
+    }
   form.products.forEach((item, index) => {
     if (!item.id) errors.push(`Produit #${index + 1} non sélectionné`)
     if (!item.quantity || item.quantity <= 0) errors.push(`Quantité invalide pour le produit #${index + 1}`)

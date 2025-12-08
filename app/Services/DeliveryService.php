@@ -9,6 +9,7 @@ use App\Models\PurchaseOrder;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
+use Symfony\Component\HttpFoundation\Request;
 
 class DeliveryService
 {
@@ -86,6 +87,59 @@ class DeliveryService
         } catch (\Throwable $th) {
             DB::rollBack();
             return back()->with('error', 'An error occurred: ' . $th->getMessage());
+        }
+    }
+
+
+    public function deliveryQuantity(Request $request, $uuid)
+    {
+        try {
+            DB::beginTransaction();
+
+            $delivery = Delivery::where('uuid', $uuid)->firstOrFail();
+            $deliveryRequest = $delivery->deliveryRequest()->firstWhere("uuid", $request['uuid']);
+
+            $totalReceivedDiff = 0;
+            $totalValueDiff = 0;
+
+            foreach ($request['items'] as $item) {
+                $deliveryItem = $deliveryRequest->items()->where('id', $item['id'])->first();
+
+                if ($deliveryItem) {
+                    // Différence entre la nouvelle quantité et l'ancienne
+                    $quantityDiff = $item['quantity_received'] - $deliveryItem->quantity_received;
+                    $subtotalDiff = $quantityDiff * (float) $item['unit_price'];
+
+                    // Incrément ou décrémenter les totaux globaux
+                    $totalReceivedDiff += $quantityDiff;
+                    $totalValueDiff += $subtotalDiff;
+
+                    // Mettre à jour l'item
+                    $deliveryItem->update([
+                        'quantity_received' => $item['quantity_received'],
+                        'subtotal_received' => (float) $item['unit_price'] * (float) $item['quantity_received'],
+                    ]);
+
+                    // Ici tu peux mettre à jour d'autres tables dépendantes si nécessaire
+                    // Exemple : Stock::where('product_id', $deliveryItem->product_id)->increment('quantity', $quantityDiff);
+                }
+            }
+
+            // Mettre à jour les totaux globaux
+            $delivery->increment('quantity_received', $totalReceivedDiff);
+            $delivery->increment('total_received', $totalValueDiff);
+
+            $deliveryRequest->increment('quantity_received', $totalReceivedDiff);
+            $deliveryRequest->increment('total_received', $totalValueDiff);
+
+            DB::commit();
+
+            return back()->with('message', 'Delivery successfully updated.');
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            throw \Illuminate\Validation\ValidationException::withMessages([
+                'message' => $th->getMessage()
+            ]);
         }
     }
 

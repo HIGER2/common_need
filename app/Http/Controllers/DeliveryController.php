@@ -16,9 +16,10 @@ class DeliveryController extends Controller
     {
         return $this->service->deliveryOrder($uuid);
     }
-    public function deliveryOrderConfirm($uuid)
+
+    public function deliveryQuantity(Request $request, $uuid)
     {
-        return $this->service->deliveryOrderConfirm($uuid);
+        return $this->service->deliveryQuantity($request, $uuid);
     }
     public function show($id)
     {

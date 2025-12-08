@@ -4,6 +4,8 @@ import StatusBadge from "@/pages/components/StatusBadge.vue"
 import AdminLayout from '@/layouts/AdminLayout.vue';
 import { Inertia } from '@inertiajs/inertia'
 import { router } from '@inertiajs/vue3'
+import ManageDeliveyrQuantity from "../components/ManageDeliveyrQuantity.vue";
+import { onBeforeUpdate, onUpdated } from "vue";
 
 const props = defineProps({
   data: { type: Object, required: true }
@@ -23,6 +25,7 @@ const confirmDelivery = (status) => {
   router.get(`/api/admin/deliveries/order/confirm/${uuid}`)
 
 }
+
 </script>
 
 
@@ -58,7 +61,7 @@ const confirmDelivery = (status) => {
                   <i class="uil uil-truck-loading"></i>
                     Delivery
             </a> -->
-              <button
+            <button
                     @click="printPage"
                     class="px-4 py-2 bg-white border border-gray-200 text-primarys cursor-pointer rounded-lg hover:bg-gray-50"
                   >
@@ -226,8 +229,18 @@ const confirmDelivery = (status) => {
               class="border border-gray-200 rounded-lg p-4 mb-5 "
             >
               <div class="flex justify-between items-center">
-                <h4 class="text-lg font-bold">Supplier: {{ req.supplier.name }}</h4>
+                  <h4 class="text-lg font-bold">Supplier: {{ req.supplier.name }}</h4>
+                   <button 
+                    onclick="my_modal_3.showModal()"
+                      class="px-4 no-print py-1 btn btn-soft  shrink-0 flex items-center justify-between border-b border-default  sm:px-6 gap-1.5  text-[15px] font-medium  cursor-pointer "
+                  >
+                    Manage Qty
+                  </button>
               </div>
+               <ManageDeliveyrQuantity
+                 :data="data?.deliveries"
+                :deliveries="req"
+                />
 
               <p class="text-gray-600 mb-3 flex items-center gap-2 my-3">
                 <!-- Item: <strong>{{ req.total_item }}</strong>| -->

@@ -30,8 +30,8 @@ class UserController extends Controller
     {
         return $this->service->updateUser($id, $request->all());
     }
-    public function destroy($id)
+    public function destroy($uuid)
     {
-        return $this->service->deleteUser($id);
+        return $this->service->deleteUser($uuid);
     }
 }
